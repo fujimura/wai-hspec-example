@@ -17,3 +17,9 @@ spec = do
 	app <- getApp
 	body <- getBody <$> app `get` ""
 	body `shouldContain` "Guten tag"
+
+    describe "GET /bar" $ do
+      it "should redirect to /foo" $ do
+	app <- getApp
+	res <- app `get` "bar"
+	res `shouldRedirectTo` "/foo"

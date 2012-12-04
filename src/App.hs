@@ -14,3 +14,6 @@ app = do
 
     get "/foo" $
         mustache "src/Views/foo.mustache" $ fooView "Foo" "Bar"
+
+    get "/bar" $
+        redirect "/foo"
