@@ -7,7 +7,7 @@ module Helper
   , getApp
   , getBody
   , getStatus
-  , shouldContains
+  , shouldContain
   ) where
 
 import           Control.Applicative      as X
@@ -40,7 +40,7 @@ getStatus = HT.statusCode . WT.simpleStatus
 should :: Show a => (a -> a -> Bool) -> a -> a -> Expectation
 should be actual expected = actual `be` expected `shouldBe` True
 
-shouldContains :: LBS.ByteString -> LBS.ByteString -> Expectation
-shouldContains subject matcher = should contains matcher subject
+shouldContain :: LBS.ByteString -> LBS.ByteString -> Expectation
+shouldContain subject matcher = should contain matcher subject
     where
-      contains m s = any (LBS.isPrefixOf m) $ LBS.tails s
+      contain m s = any (LBS.isPrefixOf m) $ LBS.tails s
