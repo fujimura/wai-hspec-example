@@ -1,0 +1,2 @@
+Example for wai + hspec
+=====

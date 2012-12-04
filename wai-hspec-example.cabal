@@ -1,0 +1,49 @@
+name:                wai-hspec-example
+version:             0.0.0.1
+synopsis:            Example for wai + hspec
+description:         Example for wai + hspec
+license:             BSD3
+license-file:        LICENSE
+author:              Daisuke Fujimura
+maintainer:          me@fujimuradaisuke.com
+copyright:           (c) 2012 Daisuke Fujimura
+category:            Web
+build-type:          Simple
+cabal-version:       >=1.8
+Data-Files:          src/Views/index.mustache
+                     src/Views/foo.mustache
+
+library
+  ghc-options:
+      -Wall
+  build-depends:
+      base < 4.7
+    , scotty
+    , hastache
+  hs-source-dirs:
+      src
+
+test-suite spec
+  main-is:
+      Spec.hs
+  type:
+      exitcode-stdio-1.0
+  ghc-options:
+      -Wall -Werror
+  hs-source-dirs:
+      src
+    , test
+  build-depends:
+      base
+    , scotty
+    , hastache
+    , bytestring
+    , conduit
+    , text
+    , path-pieces
+    , http-types
+    , mtl
+    , network
+    , wai
+    , wai-test
+    , hspec       >= 1.3
