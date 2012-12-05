@@ -47,10 +47,9 @@ failWith :: String -> Expectation
 failWith = assertFailure
 
 shouldContain :: LBS.ByteString -> LBS.ByteString -> Expectation
-shouldContain subject matcher = (matcher `contains` subject) `orFailWith` message
+shouldContain subject matcher = (subject `contains` matcher) `orFailWith` message
     where
-      m `contains` s = any (LBS.isPrefixOf m) $ LBS.tails s
-      result `orFailWith` msg = assertBool msg result
+      s `contains` m = any (LBS.isPrefixOf m) $ LBS.tails s
       message  =
         "Expected \"" ++ LC8.unpack subject ++ "\" to contain \"" ++ LC8.unpack matcher ++ "\", but not"
 
