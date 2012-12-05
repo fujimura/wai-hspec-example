@@ -55,8 +55,10 @@ shouldContain subject matcher = (subject `contains` matcher) `orFailWith` messag
 
 shouldRedirectTo :: WT.SResponse -> String -> Expectation
 shouldRedirectTo response destination =
-    case lookup HT.hLocation $ WT.simpleHeaders response of
-        Just v -> (C8.unpack v == destination)
-                  `orFailWith`
-                  ("Expected to redirect to \"" ++ destination ++ "\" but \"" ++ C8.unpack v ++ "\"")
-        Nothing -> failWith "Expected response to be a redirect but not"
+    if getStatus response == 302
+      then failWith "Expected response to be a redirect but not"
+      else case lookup HT.hLocation $ WT.simpleHeaders response of
+             Just v -> (C8.unpack v == destination)
+               `orFailWith`
+               ("Expected to redirect to \"" ++ destination ++ "\" but \"" ++ C8.unpack v ++ "\"")
+             Nothing -> failWith "Invalid redirect response header"
