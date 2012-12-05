@@ -23,3 +23,9 @@ spec = do
 	app <- getApp
 	res <- app `get` "bar"
 	res `shouldRedirectTo` "/foo"
+
+    describe "GET /foobar" $ do
+      it "should respond with 404" $ do
+	app <- getApp
+	res <- app `get` "foobar"
+	res `shouldRespondWith` 404

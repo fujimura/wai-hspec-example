@@ -9,6 +9,7 @@ module Helper
   , getStatus
   , shouldContain
   , shouldRedirectTo
+  , shouldRespondWith
   ) where
 
 import           Control.Applicative        as X
@@ -52,6 +53,14 @@ shouldContain subject matcher = (subject `contains` matcher) `orFailWith` messag
       s `contains` m = any (LBS.isPrefixOf m) $ LBS.tails s
       message  =
         "Expected \"" ++ LC8.unpack subject ++ "\" to contain \"" ++ LC8.unpack matcher ++ "\", but not"
+
+-- TODO Use Status from http-types
+shouldRespondWith :: WT.SResponse -> Int -> Expectation
+shouldRespondWith response status =
+    (getStatus response == status) `orFailWith` message
+    where
+      message = "Expected status to be \"" ++ show status ++ "\", but \"" ++ show actual ++ "\""
+      actual = getStatus response
 
 shouldRedirectTo :: WT.SResponse -> String -> Expectation
 shouldRedirectTo response destination =
