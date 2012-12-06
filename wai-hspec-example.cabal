@@ -18,7 +18,7 @@ library
       -Wall
   build-depends:
       base < 4.7
-    , scotty <= 4.6
+    , scotty >= 0.4.6
     , hastache
   hs-source-dirs:
       src
@@ -35,7 +35,7 @@ test-suite spec
     , test
   build-depends:
       base
-    , scotty <= 4.6
+    , scotty >= 0.4.6
     , hastache
     , HUnit
     , bytestring
