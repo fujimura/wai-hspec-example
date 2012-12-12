@@ -3,14 +3,18 @@
 module AppSpec ( spec ) where
 
 import Helper
+import qualified App
+import qualified Web.Scotty                 as Scotty
+import qualified Data.ByteString.Lazy       as LBS
+import qualified Network.Wai.Test           as WT
 
 spec :: Spec
 spec = do
     describe "GET /" $ do
       it "should contain 'Hello' in response body" $ do
-	app <- getApp
-	body <- getBody <$> app `get` ""
-	body `shouldContain` "Happy Holidays"
+	app <- liftIO $ Scotty.scottyApp App.app
+	body <- WT.simpleBody <$> app `get` ""
+	body `shouldSatisfy` \x -> any (LBS.isPrefixOf "Happy Holidays") $ LBS.tails x
 
     describe "GET /" $ do
       it "should contain 'Guten tag' in response body" $ do

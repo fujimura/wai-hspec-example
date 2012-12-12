@@ -36,7 +36,7 @@ get app path =
       where req = WT.setRawPathInfo WT.defaultRequest path
 
 getBody :: WT.SResponse -> LBS.ByteString
-getBody res = WT.simpleBody res
+getBody = WT.simpleBody
 
 getStatus :: WT.SResponse -> Int
 getStatus = HT.statusCode . WT.simpleStatus
@@ -48,7 +48,7 @@ failWith :: String -> Expectation
 failWith = assertFailure
 
 shouldContain :: LBS.ByteString -> LBS.ByteString -> Expectation
-shouldContain subject matcher = (subject `contains` matcher) `orFailWith` message
+shouldContain subject matcher = assertBool message (subject `contains` matcher)
     where
       s `contains` m = any (LBS.isPrefixOf m) $ LBS.tails s
       message  =
