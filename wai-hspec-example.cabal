@@ -13,13 +13,24 @@ cabal-version:       >=1.8
 Data-Files:          src/Views/index.mustache
                      src/Views/foo.mustache
 
-library
+Executable wai-hspec-example
+  main-is:
+      Main.hs
   ghc-options:
       -Wall
   build-depends:
       base < 4.7
     , scotty >= 0.4.6
     , hastache
+    , bytestring
+    , conduit
+    , text
+    , path-pieces
+    , http-types
+    , mtl
+    , network
+    , wai
+    , wai-extra
   hs-source-dirs:
       src
 
@@ -47,4 +58,5 @@ test-suite spec
     , network
     , wai
     , wai-test
+    , wai-extra
     , hspec       >= 1.3
