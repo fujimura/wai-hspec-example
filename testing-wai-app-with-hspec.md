@@ -136,11 +136,14 @@ shouldRedirectTo response destination =
              Nothing -> failWith "Invalid redirect response header"
 ```
 
+## How to organize test suite and applcation code, how to run test, etc..
 
+The code used in this article is in the link below.
 
+I tried to follow best current practices as much as I know there, so it will be some help for you.
 
-## Directory structure
+https://github.com/fujimura/wai-hspec-example
 
-## Run specs
+## Conclusion
 
-## Wrap up
+As you see, writing test for wai application is not very easy at this moment. I should write a suite of matchers for it.
