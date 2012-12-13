@@ -2,13 +2,14 @@
 
 Recently I wrote some small application with [scotty](http://hackage.haskell.org/package/scotty) with test suite. I got some useful knowledge so I'd like to share it.
 
-Since scotty is based on [wai](http://hackage.haskell.org/package/wai), we can use [wai-test](http://hackage.haskell.org/package/wai-test) for testing. It's not so difficult as you think. Let's grasp some basics of writing test for wai application.
+Since scotty is based on [wai](http://hackage.haskell.org/package/wai), we can use [wai-test](http://hackage.haskell.org/package/wai-test) for testing. wai-test is a framework for wai application. It provides some useful function like sending request to application etc.
 
 ## scotty basics
 
 At first, let's take a glance at basics of scotty. The code below is the application used in this article.
 
 ```haskell
+-- AppSpec.hs
 app :: ScottyM ()
 app = do
     get "/" $
@@ -24,15 +25,15 @@ main :: IO ()
 main = scotty 3000 app
 ```
 
-If you know sinatra or similar kind of web application framework, there could be no introduction required. It serves `index.mustache` object at root, `foo.mustache` at "/foo" and redirect to "/foo" at "/bar"(please ignore detail about View things).
+If you know sinatra or similar kind of web application framework, there might be not so many introduction required. It serves `index.mustache` object at root, `foo.mustache` at "/foo" and redirect to "/foo" at "/bar". Please ignore detail about View things.
 
-`app` will be served in port 3000 in `main`.
+Finally `app` will be run at port 3000 in `main`.
 
 ## A bit about Hspec
 
 Behavior Driven Development got popular in recent years. Hspec is a library which supports BDD in haskell, based on the most famous and popular BDD library, RSpec. Hspec is very well designed and easy to use, so if you already have some BDD experience, you'll find how to use it in a short time.
 
-If you don't know about BDD or not tried it yet, it's worth to try Hspec. As a Ruby developer(I'm a Rails developer in the daytime), even I feel BDD and Haskell is much more better than it with Ruby.
+If you don't know about BDD or not tried it yet, it's worth to try it with Hspec. As a Ruby developer(I'm a Rails developer in the daytime), even I feel BDD and Haskell is much more better than it with Ruby.
 
 ## The first step: send request and assert response body
 
@@ -55,13 +56,13 @@ main = hspec $ do
         body `shouldSatisfy` \x -> any (LBS.isPrefixOf "Happy Holidays") $ LBS.tails x
 ```
 
-In the example(`it` block), at first we took [application](http://hackage.haskell.org/packages/archive/wai/latest/doc/html/Network-Wai.html#t:Application) from the app above with [`Scotty.scottyApp`](http://hackage.haskell.org/packages/archive/scotty/latest/doc/html/Web-Scotty.html#v:scottyApp).
+In the example(`it` block), at first we took [application](http://hackage.haskell.org/packages/archive/wai/latest/doc/html/Network-Wai.html#t:Application) from the `app` in the code above with [`Scotty.scottyApp`](http://hackage.haskell.org/packages/archive/scotty/latest/doc/html/Web-Scotty.html#v:scottyApp).
 
-Sending request to application is a bit complicated, so I made a helper(`get`) to run request. If you want to know details, see document of [wai-test](http://hackage.haskell.org/package/wai-test). Response body can be extracted by [`simpleBody`](http://hackage.haskell.org/packages/archive/wai-test/latest/doc/html/Network-Wai-Test.html#v:simpleBody). [`shouldSatisfy`](http://hackage.haskell.org/packages/archive/hspec-expectations/latest/doc/html/Test-Hspec-Expectations.html#v:shouldSatisfy) takes two arguments, the former is value to assert and the latter is predicate.
+Sending request to application is a bit complicated, so I made a helper(`get`) to run request. If you want to know the detail about this helper, see document of [wai-test](http://hackage.haskell.org/package/wai-test). Response body can be extracted by [`simpleBody`](http://hackage.haskell.org/packages/archive/wai-test/latest/doc/html/Network-Wai-Test.html#v:simpleBody). [`shouldSatisfy`](http://hackage.haskell.org/packages/archive/hspec-expectations/latest/doc/html/Test-Hspec-Expectations.html#v:shouldSatisfy) takes two arguments, the former is value to assert and the latter is predicate, and do assertion.
 
 ## Add helper for readable code
 
-I felt example is too much into detail and needs some more helpers. To keep the test code clean is very important for continuous testing. I made few helpers below and the example got much simpler with them.
+I felt example is too much into detail. I'd like to add some helpers to make it cleaner. To keep the test code clean is important for continuous testing. I made few helpers below and the example got much simpler with them.
 
 ```haskell
 
@@ -92,7 +93,7 @@ shouldContain subject matcher = assertBool message (subject `contains` matcher)
 
 We saw `get` in previous paragraph. It just moved. `getBody` is just an alias for [simpleBody](http://hackage.haskell.org/packages/archive/wai-test/latest/doc/html/Network-Wai-Test.html#v:simpleBody).  `shouldContain` is a matcher, which asserts x is in y or not.
 
-Actual spec got simpler as below.
+Actual test code got simpler as below.
 
 ```haskell
 import Helper
@@ -120,7 +121,7 @@ Spec to assert 'redirect' response will be like this.
         res `shouldRedirectTo` "/foo"
 ```
 
-Yes, I added another matcher `shouldRedirectTo`. I can't say it's simple and clean at this moment, but works fine.
+Yes, I added another matcher `shouldRedirectTo`. I can't say it's implementation is simple or clean, but just works.
 
 ```haskell
 -- Helper.hs
@@ -136,7 +137,7 @@ shouldRedirectTo response destination =
              Nothing -> failWith "Invalid redirect response header"
 ```
 
-## How to organize test suite and applcation code, how to run test, etc..
+## How to organize test suite and application code, how to run test, etc..
 
 The code used in this article is in the link below.
 
@@ -146,4 +147,4 @@ https://github.com/fujimura/wai-hspec-example
 
 ## Conclusion
 
-As you see, writing test for wai application is not very easy at this moment. I should write a suite of matchers for it.
+As you see, I can't say writing test for wai application is not always easy at this moment. I should write a suite of matchers for wai.
