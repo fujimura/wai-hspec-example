@@ -67,7 +67,7 @@ shouldRedirectTo response destination =
     if getStatus response == 302
       then failWith "Expected response to be a redirect but not"
       else case lookup HT.hLocation $ WT.simpleHeaders response of
-             Just v -> (C8.unpack v == destination)
-               `orFailWith`
+             Just v -> assertBool
                ("Expected to redirect to \"" ++ destination ++ "\" but \"" ++ C8.unpack v ++ "\"")
+               (C8.unpack v == destination)
              Nothing -> failWith "Invalid redirect response header"
