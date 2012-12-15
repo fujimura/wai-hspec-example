@@ -1,19 +1,21 @@
-# hspecでwaiのアプリケーションをテストしましょう
+# HspecでWAIのアプリケーションをテストしましょう
 
 ## イントロ
 
 近頃、私は
 [scotty](http://hackage.haskell.org/package/scotty)を使ってアプリケーションをテスト付きで書きました。いくつか便利な情報を得たので、共有したいと思います。
 
+scottyは[WAI](http://hackage.haskell.org/package/wai)ベースなので、テストには[wai-test](http://hackage.haskell.org/package/wai-test)が使えます。wai-testはWAIアプリケーション用のテストフレームワークで、テストに便利な関数が入っています。
 
-scottyは[wai](http://hackage.haskell.org/package/wai)ベースなので、テストには[wai-test](http://hackage.haskell.org/package/wai-test)が使えます。wai-testはwaiアプリケーション用のテストフレームワークで、テストに便利な関数が入っています。
+文中のコード例の実際に動くものは[ここ](https://github.com/fujimura/wai-hspec-example)にあります。文中のコード例はimportやモジュール定義等を適宜省略していますのでご注意ください。
 
 ## scottyの基礎
 
-まずはscottyの基本的な部分を眺めておきましょう。下記のコードがこの記事で使われるアプリケーションです。
+まずはscottyの基本的な部分を眺めておきましょう。この記事で使われるアプリケーションは下記の通りです。
 
 ```haskell
--- AppSpec.hs
+-- src/App.hs
+
 app :: ScottyM ()
 app = do
     get "/" $
@@ -24,62 +26,54 @@ app = do
 
     get "/bar" $
         redirect "/foo"
-
-main :: IO ()
-main = scotty 3000 app
 ```
 
-あなたがもしsinatraとかのWebアプリケーションフレームワークを知っていたら、あまり説明はいらないかもしれません。このアプリは"/"で`index.mustache`を、"/foo"で`foo.mustache`を表示して、 "/bar"は"foo"にリダイレクトします。ビューの詳細については省略します。
-
-で、`app`は`main`で3000番ポートで実行されます。
+[sinatra](http://www.sinatrarb.com/)系のシンプルなWebアプリケーションフレームワークを知っている人にはあまり説明はいらないかもしれません。このアプリは"/"で`index.mustache`を、"/foo"で`foo.mustache`の内容を表示して、 "/bar"は"foo"にリダイレクトします。ビューの詳細については省略します。
 
 ## Hspecについて少し
 
-最近振る舞い駆動開発(Behavior Driven Development, BDD)は人気になってきました。HspecはHaskellでBDDをするライブラリで、最も有名なBDDライブラリであるRSpecをベースに作られています。Hspecはとてもよくデザインされていて使うのは簡単です。もしあなたがBDDの経験があれば、使い方はすぐ判ると思います。
+ここ数年、振る舞い駆動開発(Behavior Driven Development, BDD)が人気です。HspecはHaskellでBDDをするライブラリで、最も有名なBDDライブラリであるRSpecをベースに作られています。とてもよくデザインされていて、使うのは簡単です。BDDの経験があれば使い方はすぐわかると思います。
 
-もしあなたがBDDについて知らない、もしくはやったことがないなら、Hspecで試してみる価値アリです。HaskellとBDDをの組み合わせは、Rubyプログラマーとして（僕は日中はRailsプログラマーです）的にも、もしかしたらRubyとの組み合わせより良いんじゃないか？って思うくらいです。
-
+もしあなたがBDDについて知らない、もしくはやったことがないなら、Hspecで試してみる価値アリです。HaskellとBDDをの組み合わせは、Rubyプログラマーとして（僕は日中はRailsプログラマーです）、もしかしたらRubyとの組み合わせより良いんじゃないか？って思うくらいです。
 
 ## 最初の一歩: リクエストを送って、レスポンスボディを検査しましょう
 
-ではテストコーどを書いてみましょう。まずはレスポンスの本文にViewに渡した文字列が含まれてるか検証してみます。
+ではテストコードを書いてみましょう。まずはレスポンスの本文にViewに渡した文字列が含まれてるか検証してみます。
 
 ```haskell
+-- test/AppSpec.hs
+
 import qualified App
-import qualified Data.ByteString            as BS
 import qualified Data.ByteString.Lazy       as LBS
+import           Helper
 import qualified Network.Wai                as W
-import qualified Network.Wai.Test           as WT
-import qualified Web.Scotty                 as Scotty
+import qualified Network.Wai.Test     as WT
+import           Web.Scotty           (scottyApp)
 
 main :: IO ()
 main = hspec $ do
     describe "GET /" $ do
       it "should contain 'Hello' in response body" $ do
-        app <- liftIO $ Scotty.scottyApp App.app
+        app <- liftIO $ scottyApp App.app
         body <- WT.simpleBody <$> app `get` ""
         body `shouldSatisfy` \x -> any (LBS.isPrefixOf "Happy Holidays") $ LBS.tails x
 ```
 
-example(`it`の部分)の中では、まずはさっきのコードにあった`app`から[Scotty.scottyApp](http://hackage.haskell.org/packages/archive/scotty/latest/doc/html/Web-Scotty.html#v:scottyApp)を使って、waiの[application](http://hackage.haskell.org/packages/archive/wai/latest/doc/html/Network-Wai.html#t:Application)を取得しています。
+example(`it`の部分)の中では、まずはさっきのコードにあった`app`から[scottyApp](http://hackage.haskell.org/packages/archive/scotty/latest/doc/html/Web-Scotty.html#v:scottyApp)を使って、WAIの[application](http://hackage.haskell.org/packages/archive/wai/latest/doc/html/Network-Wai.html#t:Application)を取得しています。
 
 リクエスト送信は少し複雑です。なので、リクエストを送るために`get`というヘルパーを作りました。ヘルパーの詳細を知りたかったら、
 [wai-test](http://hackage.haskell.org/package/wai-test)のドキュメントを見てみてください。
 
 
-
-. Response body can be extracted by 
-レスポンスの本文は[`simpleBody`](http://hackage.haskell.org/packages/archive/wai-test/latest/doc/html/Network-Wai-Test.html#v:simpleBody)で取れます。[`shouldSatisfy`](http://hackage.haskell.org/packages/archive/hspec-expectations/latest/doc/html/Test-Hspec-Expectations.html#v:shouldSatisfy)は検証したい値とそれに対する述語をとって検証を行います。
+レスポンスの本文は[`simpleBody`](http://hackage.haskell.org/packages/archive/wai-test/latest/doc/html/Network-Wai-Test.html#v:simpleBody)で取れます。[`shouldSatisfy`](http://hackage.haskell.org/packages/archive/hspec-expectations/latest/doc/html/Test-Hspec-Expectations.html#v:shouldSatisfy)は検証したい値とそれに対する述語をとってアサーションを行います。
 
 ## ヘルパーを追加して読みやすくしましょう
 
-この例はちょっと詳細を語りすぎている気がします。ヘルパーを追加して、綺麗にしたいです。テストコードを綺麗に保つことは、継続的にテストする上で大切です。下記のヘルパーを追加して、ちょっとシンプルになりました。 
+この例はちょっと詳細を語りすぎている気がするので、ヘルパーを追加して、綺麗にしたいです。下記のヘルパーを追加して、ちょっとシンプルになりました。
 
 ```haskell
-
 -- test/Helper.hs
 
-import qualified App
 import qualified Data.ByteString            as BS
 import qualified Data.ByteString.Lazy       as LBS
 import qualified Data.ByteString.Lazy.Char8 as LC8
@@ -102,18 +96,23 @@ shouldContain subject matcher = assertBool message (subject `contains` matcher)
         "Expected \"" ++ LC8.unpack subject ++ "\" to contain \"" ++ LC8.unpack matcher ++ "\", but not"
 ```
 
-`get`はさっき書きました。動かしただけです。`getBody`は[simpleBody](http://hackage.haskell.org/packages/archive/wai-test/latest/doc/html/Network-Wai-Test.html#v:simpleBody)の別名です。`shouldContain`はマッチャーで、xがyに入ってるかどうか確かめます。
+さっき実装した`get`はこちらに動かしました。`getBody`は[simpleBody](http://hackage.haskell.org/packages/archive/wai-test/latest/doc/html/Network-Wai-Test.html#v:simpleBody)に別名をつけただけです。`shouldContain`はマッチャーで、xがyに入ってるかどうか確かめます。
 
 実際のテストコードは下記のようにシンプルになりました。
 
 ```haskell
-import Helper
+-- test/AppSpec.hs
+
+import qualified Data.ByteString.Lazy as LBS
+import           Helper
+import qualified Network.Wai.Test     as WT
+import           Web.Scotty           (scottyApp)
 
 main :: IO ()
 main = hspec $ do
     describe "GET /" $ do
       it "should contain 'Happy Holidays' in response body" $ do
-	app <- getApp
+        app <- liftIO $ scottyApp App.app
 	body <- getBody <$> app `get` ""
 	body `shouldContain` "Happy Holidays"
 ```
@@ -123,7 +122,7 @@ main = hspec $ do
 リダイレクトを検証するspecは下記のようになります。
 
 ```haskell
--- AppSpec.hs
+-- test/AppSpec.hs
 
     describe "GET /bar" $ do
       it "should redirect to /foo" $ do
@@ -135,7 +134,12 @@ main = hspec $ do
 はい。`shouldRedirectTo`ってマッチャーを追加しました。実装は綺麗ともシンプルとも言えませんが、まあ動きます。
 
 ```haskell
--- Helper.hs
+-- test/Helper.hs.hs
+
+import           Test.HUnit                 (assertBool, assertFailure)
+import qualified Data.ByteString.Char8      as C8
+import qualified Network.HTTP.Types         as HT
+import qualified Network.Wai.Test           as WT
 
 shouldRedirectTo :: WT.SResponse -> String -> Expectation
 shouldRedirectTo response destination =
@@ -150,10 +154,14 @@ shouldRedirectTo response destination =
 
 ## テストスイートとアプリケーションコードの配置とか、テストの実行とか…。
 
-この記事で使ったコードを下記にまとめておいたので、それを見てみてください。
-僕の知っている限りで今のところ一番良いとされている慣行に従おうとしたので、参考になるかと思います。
+この記事で使ったコードを下記にまとめておいたので、それを見てみてください。僕の知っている限りで今のところ一番良いとされている慣行におおよそ従おうとしました。
 
 [https://github.com/fujimura/wai-hspec-example](https://github.com/fujimura/wai-hspec-example)
 
 ## 結論
-見ての通り、waiアプリケーションにテストを書いていくのは、今のところ常に簡単とはいえません。wai用のマッチャーを書かないとですね…。
+
+お気づきかもしれませんが、WAIアプリケーションにテストを書くのは、今のところすごく簡単だとは言えない状況です。WAI用のマッチャーを書かないとですね…。
+
+
+## 追記
+`shouldContain`は、wai-testの[assertBodyContains](http://hackage.haskell.org/packages/archive/wai-test/latest/doc/html/Network-Wai-Test.html#v:assertBodyContains)で代用できますね…この記事を書いている途中で気が付きました。
