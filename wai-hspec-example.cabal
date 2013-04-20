@@ -59,4 +59,4 @@ test-suite spec
     , wai
     , wai-test
     , wai-extra
-    , hspec       >= 1.3
+    , hspec       >= 1.5
