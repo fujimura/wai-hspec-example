@@ -20,7 +20,7 @@ spec = do
       it "should contain 'Guten tag' in response body" $ do
         app <- getApp
         body <- getBody <$> app `get` ""
-        body `shouldContain` "Guten tag"
+        LBS.unpack body `shouldContain` LBS.unpack "Guten tag"
 
     describe "GET /bar" $ do
       it "should redirect to /foo" $ do
