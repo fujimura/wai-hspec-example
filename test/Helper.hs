@@ -26,7 +26,7 @@ import qualified Network.Wai.Test           as WT
 import qualified Web.Scotty                 as Scotty
 
 getApp :: IO W.Application
-getApp = liftIO $ Scotty.scottyApp App.app
+getApp = Scotty.scottyApp App.app
 
 get :: W.Application -> BS.ByteString -> IO WT.SResponse
 get app path =

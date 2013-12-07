@@ -1,19 +1,17 @@
-{-# LANGUAGE OverloadedStrings    #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module AppSpec ( spec ) where
 
-import Helper
-import qualified App
-import qualified Web.Scotty                 as Scotty
-import qualified Data.ByteString.Lazy       as LBS
-import qualified Network.Wai.Test           as WT
+import           Helper
+
+import qualified Data.ByteString.Lazy as LBS
 
 spec :: Spec
 spec = do
     describe "GET /" $ do
       it "should contain 'Hello' in response body" $ do
-        app <- liftIO $ Scotty.scottyApp App.app
-        body <- WT.simpleBody <$> app `get` ""
+        app <- getApp
+        body <- getBody <$> app `get` ""
         body `shouldSatisfy` \x -> any (LBS.isPrefixOf "Happy Holidays") $ LBS.tails x
 
     describe "GET /" $ do
