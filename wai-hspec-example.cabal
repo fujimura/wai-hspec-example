@@ -20,7 +20,7 @@ Executable wai-hspec-example
       -Wall
   build-depends:
       base < 4.7
-    , scotty >= 0.4.6
+    , scotty >= 0.6.0
     , hastache
     , bytestring
     , conduit
@@ -29,8 +29,8 @@ Executable wai-hspec-example
     , http-types
     , mtl
     , network
-    , wai < 2.0.0
-    , wai-extra < 2.0.0
+    , wai >= 2.0.0
+    , wai-extra >= 2.0.0
   hs-source-dirs:
       src
 
@@ -46,7 +46,7 @@ test-suite spec
     , test
   build-depends:
       base
-    , scotty >= 0.4.6
+    , scotty >= 0.6.0
     , hastache
     , HUnit
     , bytestring
@@ -56,8 +56,8 @@ test-suite spec
     , http-types
     , mtl
     , network
-    , wai < 2.0.0
-    , wai-test < 2.0.0
-    , wai-extra < 2.0.0
+    , wai >= 2.0.0
+    , wai-test >= 2.0.0
+    , wai-extra >= 2.0.0
     , hspec       >= 1.7
     , hspec-expectations >= 0.3.3
