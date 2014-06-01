@@ -59,5 +59,6 @@ test-suite spec
     , wai >= 2.0.0
     , wai-test >= 2.0.0
     , wai-extra >= 2.0.0
-    , hspec       >= 1.7
-    , hspec-expectations >= 0.3.3
+    , hspec2
+    , hspec-expectations-lifted
+    , transformers
