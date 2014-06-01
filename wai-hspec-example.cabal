@@ -19,7 +19,7 @@ Executable wai-hspec-example
   ghc-options:
       -Wall
   build-depends:
-      base < 4.7
+      base < 5.0
     , scotty >= 0.6.0
     , hastache >= 0.6.0
     , bytestring
