@@ -4,7 +4,6 @@ module Helper
   (
     module X
   , get
-  , getApp
   , getBody
   , getStatus
   , shouldSatisfy
@@ -19,15 +18,12 @@ import           Test.Hspec                 as X hiding (shouldSatisfy, shouldCo
 import qualified Test.Hspec.Expectations.Lifted as Lifted
 import           Test.HUnit                 (assertBool, assertFailure)
 
-import qualified App
 import qualified Data.ByteString            as BS
 import qualified Data.ByteString.Char8      as C8
 import qualified Data.ByteString.Lazy.Char8 as LC8
 import qualified Data.ByteString.Lazy       as LBS
 import qualified Network.HTTP.Types         as HT
-import qualified Network.Wai                as W
 import qualified Network.Wai.Test           as WT
-import qualified Web.Scotty                 as Scotty
 
 import           Test.Hspec.Core (Example(..))
 import           Control.Monad.Trans.Reader
@@ -39,9 +35,6 @@ newtype WaiExample  a = WE {unWE :: ReaderT Application IO a}
 instance Example (WaiExample ()) where
   type Arg (WaiExample ()) = Application
   evaluateExample e p action = evaluateExample (action $ runReaderT (unWE e)) p ($ ())
-
-getApp :: IO W.Application
-getApp = Scotty.scottyApp App.app
 
 get :: BS.ByteString -> WaiExample WT.SResponse
 get path = do

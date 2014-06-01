@@ -1,14 +1,13 @@
-{-# LANGUAGE OverloadedStrings    #-}
+{-# LANGUAGE OverloadedStrings #-}
+module App (app) where
 
-module App
-    ( app
-    ) where
-
-import           Views
+import           Network.Wai
 import           Web.Scotty hiding (body)
 
-app :: ScottyM ()
-app = do
+import           Views
+
+app :: IO Application
+app = scottyApp $ do
     get "/" $
         mustache "src/Views/index.mustache" $ indexView "Happy Holidays" "from Fujimura"
 

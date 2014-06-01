@@ -1,14 +1,10 @@
-{-# LANGUAGE DeriveDataTypeable   #-}
-{-# LANGUAGE FlexibleInstances    #-}
-{-# LANGUAGE OverloadedStrings    #-}
-{-# LANGUAGE TypeSynonymInstances #-}
+module Main (main) where
 
-import qualified App
+import           App
 import           Network.Wai.Middleware.RequestLogger
-import Web.Scotty
+import           Network.Wai.Handler.Warp
 
 main :: IO ()
 main = do
-    scotty 3000 $ do
-      middleware logStdoutDev
-      App.app
+    putStrLn "http://localhost:3000"
+    app >>= run 3000 . logStdoutDev

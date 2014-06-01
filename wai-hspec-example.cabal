@@ -31,6 +31,7 @@ Executable wai-hspec-example
     , network
     , wai >= 2.0.0
     , wai-extra >= 2.0.0
+    , warp
   hs-source-dirs:
       src
 
@@ -59,6 +60,7 @@ test-suite spec
     , wai >= 2.0.0
     , wai-test >= 2.0.0
     , wai-extra >= 2.0.0
+    , warp
     , hspec2
     , hspec-expectations-lifted
     , transformers
