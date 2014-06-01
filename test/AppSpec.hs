@@ -1,29 +1,20 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module AppSpec ( spec ) where
+module AppSpec (spec) where
 
-import           Helper
+import           Test.Hspec
+import           Test.Hspec.Wai
 
-import qualified Data.ByteString.Lazy as LBS
 import           App
 
 spec :: Spec
 spec = before app $ do
-    describe "GET /" $ do
-      it "should contain 'Hello' in response body" $ do
-        body <- getBody <$> get ""
-        body `shouldSatisfy` \x -> any (LBS.isPrefixOf "Happy Holidays") $ LBS.tails x
+  describe "GET /foo" $ do
+    it "reponds with 200" $ do
+      get "/foo" `shouldRespondWith` 200
 
-    describe "GET /" $ do
-      it "should contain 'Guten tag' in response body" $ do
-        body <- getBody <$> get ""
-        body `shouldContain` "Guten tag"
+    it "reponds with 'bar'" $ do
+      get "/foo" `shouldRespondWith` "bar"
 
-    describe "GET /bar" $ do
-      it "should redirect to /foo" $ do
-        res <- get "bar"
-        res `shouldRedirectTo` "/foo"
-
-    describe "GET /foobar" $ do
-      it "should respond with 404" $ do
-        get "foobar" `shouldRespondWith` 404
+    it "reponds with 200 / 'bar'" $ do
+      get "/foo" `shouldRespondWith` "bar" {matchStatus = 200}
