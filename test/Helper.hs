@@ -7,18 +7,20 @@ module Helper
   , getApp
   , getBody
   , getStatus
+  , shouldContain
   , shouldRedirectTo
   , shouldRespondWith
   ) where
 
 import           Control.Applicative        as X
 import           Control.Monad.Trans        as X
-import           Test.Hspec                 as X
+import           Test.Hspec                 as X hiding (shouldContain)
 import           Test.HUnit                 (assertBool, assertFailure)
 
 import qualified App
 import qualified Data.ByteString            as BS
 import qualified Data.ByteString.Char8      as C8
+import qualified Data.ByteString.Lazy.Char8 as LC8
 import qualified Data.ByteString.Lazy       as LBS
 import qualified Network.HTTP.Types         as HT
 import qualified Network.Wai                as W
@@ -44,6 +46,13 @@ orFailWith = flip assertBool
 
 failWith :: String -> Expectation
 failWith = assertFailure
+
+shouldContain :: LBS.ByteString -> LBS.ByteString -> Expectation
+shouldContain subject matcher = assertBool message (subject `contains` matcher)
+    where
+      s `contains` m = any (LBS.isPrefixOf m) $ LBS.tails s
+      message  =
+        "Expected \"" ++ LC8.unpack subject ++ "\" to contain \"" ++ LC8.unpack matcher ++ "\", but not"
 
 -- TODO Use Status from http-types
 shouldRespondWith :: WT.SResponse -> Int -> Expectation

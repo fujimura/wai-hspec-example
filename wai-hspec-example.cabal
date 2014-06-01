@@ -21,7 +21,7 @@ Executable wai-hspec-example
   build-depends:
       base < 4.7
     , scotty >= 0.6.0
-    , hastache
+    , hastache >= 0.6.0
     , bytestring
     , conduit
     , text
