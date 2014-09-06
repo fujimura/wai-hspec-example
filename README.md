@@ -1,12 +1,3 @@
-# wai-hspec-example
+This example was extracted as a library.
 
-Example for wai + hspec
-
-## How to build
-
-```shell
-$ cabal-dev update
-$ cabal-dev install --enable-tests
-
-$ cabal-dev configure --enable-tests && cabal-dev build && cabal-dev test
-```
+Pleae see https://github.com/hspec/hspec-wai.
