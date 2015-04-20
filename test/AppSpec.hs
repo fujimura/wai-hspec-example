@@ -5,6 +5,7 @@ module AppSpec ( spec ) where
 import           Helper
 
 import qualified Data.ByteString.Lazy as LBS
+import qualified Network.HTTP.Types   as HT
 
 spec :: Spec
 spec = do
@@ -30,4 +31,4 @@ spec = do
       it "should respond with 404" $ do
         app <- getApp
         res <- app `get` "foobar"
-        res `shouldRespondWith` 404
+        res `shouldRespondWith` HT.notFound404
