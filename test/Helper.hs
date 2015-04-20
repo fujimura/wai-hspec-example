@@ -38,8 +38,8 @@ get app path =
 getBody :: WT.SResponse -> LBS.ByteString
 getBody = WT.simpleBody
 
-getStatus :: WT.SResponse -> Int
-getStatus = HT.statusCode . WT.simpleStatus
+getStatus :: WT.SResponse -> HT.Status
+getStatus = WT.simpleStatus
 
 orFailWith :: Bool -> String -> Expectation
 orFailWith = flip assertBool
@@ -54,8 +54,7 @@ shouldContain subject matcher = assertBool message (subject `contains` matcher)
       message  =
         "Expected \"" ++ LC8.unpack subject ++ "\" to contain \"" ++ LC8.unpack matcher ++ "\", but not"
 
--- TODO Use Status from http-types
-shouldRespondWith :: WT.SResponse -> Int -> Expectation
+shouldRespondWith :: WT.SResponse -> HT.Status -> Expectation
 shouldRespondWith response status =
     (getStatus response == status) `orFailWith` message
     where
@@ -64,7 +63,7 @@ shouldRespondWith response status =
 
 shouldRedirectTo :: WT.SResponse -> String -> Expectation
 shouldRedirectTo response destination =
-    if getStatus response == 302
+    if getStatus response == HT.found302
       then failWith "Expected response to be a redirect but not"
       else case lookup HT.hLocation $ WT.simpleHeaders response of
              Just v -> assertBool
